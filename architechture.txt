@@ -19,13 +19,19 @@ OOP_PHONEBOOK/
 │   ├── ContactManager.cpp            # Реализация менеджера контактов
 │   ├── FileRepository.cpp            # Реализация файлового хранилища
 │   ├── UI.cpp                        # Реализация пользовательского интерфейса
-│   └── main.cpp                      # Главная функция (дубликат корневого main.cpp)
+│   └── main.cpp                      # Точка входа в программу, главное меню
 │
 └── third_party/                      # Сторонние библиотеки
     └── json.hpp                      # Библика nlohmann/json для работы с JSON
 
+Архитектурные связи:
+
+UI.h → ContactManager.h → IContactRepository.h → FileRepository.h
+     ↓                    ↓
+Contact.h → PhoneNumber.h → Validators.h
+
+
+
+
 g++ -Iinclude source/*.cpp -o phonebook.exe
 ./phonebook.exe
-
-
-mmmm@mmmm.mmmm
