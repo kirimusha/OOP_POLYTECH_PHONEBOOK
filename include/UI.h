@@ -5,6 +5,8 @@
 
 // Вспомогательные функции
 void clearInput();
+void clearScreen();
+void waitForEnter();
 bool stringToTime(const string& str, time_t& out);
 PhoneType selectPhoneType();
 

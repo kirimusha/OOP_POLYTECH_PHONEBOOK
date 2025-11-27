@@ -1,6 +1,6 @@
 #pragma once
 #include "IContactRepository.h"
-#include <../third_party/json.hpp>
+#include "../third_party/json.hpp"
 #include <string>
 #include <vector>
 #include <fstream>
