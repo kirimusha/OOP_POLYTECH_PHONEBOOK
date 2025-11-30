@@ -1,6 +1,6 @@
-#include "Contact.h"
-#include "PhoneNumber.h"
-#include "Validators.h"
+#include "include/Contact.h"
+#include "include/PhoneNumber.h"
+#include "include/Validators.h"
 #include <iostream>
 #include <algorithm>
 #include <sstream>

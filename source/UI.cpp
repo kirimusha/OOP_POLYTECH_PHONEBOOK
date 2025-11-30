@@ -1,9 +1,24 @@
+#include "include/UI.h"
 #include <iostream>
 #include <limits>
 #include <algorithm>
-#include "UI.h"
+#include <cstdlib> // для system()
 
 using namespace std;
+
+void clearScreen() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+void waitForEnter() {
+    cout << "\nPress Enter to continue...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    clearScreen(); // Очистка экрана перед каждым выводом меню
+}
 
 // Вспомогательная функция для конвертации строки в time_t
 bool stringToTime(const string& str, time_t& out) {
@@ -36,6 +51,7 @@ PhoneType selectPhoneType() {
 
 // Сортировка контактов
 void sortContacts(ContactManager& manager) {
+    clearScreen(); // Очистка экрана перед каждым выводом меню
     cout << "\n___ Sort Contacts ___\n";
     cout << "Sort by:\n";
     cout << "1. First Name\n";
@@ -132,6 +148,7 @@ void sortContacts(ContactManager& manager) {
 
 // Редактирование контакта
 void editContact(ContactManager& manager) {
+    clearScreen(); // Очистка экрана перед каждым выводом меню
     string email;
     cout << "Enter email of contact to edit: ";
     getline(cin, email);
@@ -368,6 +385,7 @@ void editPhones(Contact& contact) {
 
 // Добавление контакта через консоль
 void addContact(ContactManager& manager) {
+    clearScreen(); // Очистка экрана перед каждым выводом меню
     Contact c;
     string input;
 
@@ -437,6 +455,7 @@ void addContact(ContactManager& manager) {
 }
 
 void viewContacts(const ContactManager& manager) {
+    clearScreen(); // Очистка экрана перед каждым выводом меню
     auto contacts = manager.getAllContacts();
     if (contacts.empty()) {
         cout << "Phonebook is empty.\n";
@@ -478,6 +497,7 @@ void viewContacts(const ContactManager& manager) {
 }
 
 void searchContacts(const ContactManager& manager) {
+    clearScreen(); // Очистка экрана перед каждым выводом меню
     cout << "\n___ Search Contacts ___\n";
     cout << "1. Search by Name\n";
     cout << "2. Search by Email\n";
@@ -549,6 +569,7 @@ void searchContacts(const ContactManager& manager) {
 }
 
 void removeContact(ContactManager& manager) {
+    clearScreen(); // Очистка экрана перед каждым выводом меню
     string email;
     cout << "Enter the contact's email address to delete: ";
     getline(cin, email);

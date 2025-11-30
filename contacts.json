@@ -1,10 +1,32 @@
 [
     {
-        "address": "spb",
-        "birthDate": "21.12.2006",
-        "email": "mail@ma.ma",
-        "firstName": "Dasha",
-        "lastName": "G",
+        "address": "m",
+        "birthDate": "02.02.2002",
+        "email": "m@mmm.mmm",
+        "firstName": "m",
+        "lastName": "m",
+        "patronymic": "m",
+        "phones": [
+            {
+                "number": "88888888888",
+                "type": 0
+            },
+            {
+                "number": "89898989898",
+                "type": 1
+            },
+            {
+                "number": "89998889998",
+                "type": 2
+            }
+        ]
+    },
+    {
+        "address": "Los Angeles",
+        "birthDate": "03.02.1977",
+        "email": "gosling@mail.ru",
+        "firstName": "Rayan",
+        "lastName": "Gosling",
         "patronymic": "",
         "phones": [
             {
@@ -28,23 +50,15 @@
         ]
     },
     {
-        "address": "m",
-        "birthDate": "02.02.2002",
-        "email": "m@mmm.mmm",
-        "firstName": "m",
-        "lastName": "m",
-        "patronymic": "m",
+        "address": "spb",
+        "birthDate": "21.12.2006",
+        "email": "mail@ma.ma",
+        "firstName": "Dasha",
+        "lastName": "G",
+        "patronymic": "",
         "phones": [
             {
                 "number": "88888888888",
-                "type": 0
-            },
-            {
-                "number": "89898989898",
-                "type": 1
-            },
-            {
-                "number": "89998889998",
                 "type": 2
             }
         ]
