@@ -1,12 +1,11 @@
+#include "../include/Contact.h"
+#include "../include/PhoneNumber.h"
+#include "../include/FileRepository.h"
+#include "../include/ContactManager.h"
+#include "../include/UI.h"
 #include <iostream>
 #include <limits>
-#include <io.h>
 #include <fcntl.h>
-#include "Contact.h"
-#include "PhoneNumber.h"
-#include "FileRepository.h"
-#include "ContactManager.h"
-#include "UI.h"
 
 int main() {
     FileRepository repo("contacts.json");
@@ -27,17 +26,40 @@ int main() {
 
         int choice;
         cin >> choice;
+
         clearInput();
 
         switch (choice) {
-            case 1: viewContacts(manager); break;
-            case 2: sortContacts(manager); break;
-            case 3: searchContacts(manager); break;
-            case 4: addContact(manager); break;
-            case 5: editContact(manager); break;
-            case 6: removeContact(manager); break;
-            case 0: return 0;
-            default: cout << "Wrong choise\n"; break;
+            case 1: 
+                viewContacts(manager); 
+                waitForEnter();
+                break;
+            case 2: 
+                sortContacts(manager); 
+                waitForEnter();
+                break;
+            case 3: 
+                searchContacts(manager); 
+                waitForEnter();
+                break;
+            case 4: 
+                addContact(manager); 
+                waitForEnter();
+                break;
+            case 5: 
+                editContact(manager); 
+                waitForEnter();
+                break;
+            case 6: 
+                removeContact(manager); 
+                waitForEnter();
+                break;
+            case 0: 
+                return 0;
+            default: 
+                cout << "Wrong choice\n"; 
+                waitForEnter();
+                break;
         }
     }
 

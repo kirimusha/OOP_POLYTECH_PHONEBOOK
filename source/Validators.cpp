@@ -1,4 +1,4 @@
-#include "Validators.h"
+#include "include/Validators.h"
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -75,6 +75,7 @@ bool Validators::validate_name(const string& name) {
     return true;
 }
 
+
 // Email
 bool Validators::validate_email(const string& newEmail) {
     string email = remove_spaces(trim(newEmail));
@@ -87,7 +88,7 @@ bool Validators::validate_email(const string& newEmail) {
     return regex_match(email, email_regex);
 }
 
-// Телефон - ИСПРАВЛЕННАЯ ВЕРСИЯ
+// Телефон
 bool Validators::validate_phone(const string& phone) {
     string s = trim(phone);
     if (s.empty()) return false;

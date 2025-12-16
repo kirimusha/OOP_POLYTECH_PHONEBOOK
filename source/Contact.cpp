@@ -1,6 +1,6 @@
-#include "Contact.h"
-#include "PhoneNumber.h"
-#include "Validators.h"
+#include "include/Contact.h"
+#include "include/PhoneNumber.h"
+#include "include/Validators.h"
 #include <iostream>
 #include <algorithm>
 #include <sstream>
@@ -12,13 +12,25 @@
 using namespace std;
 using json = nlohmann::json;
 
-// Вспомогательная функция для удаления пробелов по краям
+// инициализация статического поля - по умолчанию консольный режим
+ContactMode Contact::workMode = ContactMode::CONSOLE;
+
+// вспомогательная функция для удаления пробелов по краям
 static string trim(const string& str) {
     ::std::size_t start = str.find_first_not_of(" \t\n\r");
     if (start == string::npos) return "";
     
     ::std::size_t end = str.find_last_not_of(" \t\n\r");
     return str.substr(start, end - start + 1);
+}
+
+// статические методы для управления режимом работы
+void Contact::setMode(ContactMode mode) {
+    workMode = mode;
+}
+
+ContactMode Contact::getMode() {
+    return workMode;
 }
 
 // конструкторы
@@ -37,13 +49,36 @@ Contact::Contact(const string& firstName,
       email(email),
       phones(phones)
 {
-    cout << "[Contact] A contact has been created:" << firstName << lastName;
+    // только в консольном режиме выводим сообщение
+    if (workMode == ContactMode::CONSOLE) {
+        cout << "[Contact] A contact has been created:" << firstName << lastName << endl;
+    }
 }
 
-// Деструктор
+// деструктор
 Contact::~Contact() = default;
 
-// Конструктор копирования
+
+// оператор присваивания копированием
+Contact& Contact::operator=(const Contact& other) {
+    // защита от самоприсваивания (a = a)
+    if (this == &other) {
+        return *this;
+    }
+    
+    // копируем все поля
+    firstName = other.firstName;
+    lastName = other.lastName;
+    patronymic = other.patronymic;
+    address = other.address;
+    birthDate = other.birthDate;
+    email = other.email;
+    phones = other.phones;
+    
+    return *this;
+}
+
+// конструктор копирования
 Contact::Contact(const Contact& other) 
     : firstName(other.firstName),
       lastName(other.lastName),
@@ -83,49 +118,73 @@ list<PhoneNumber> Contact::get_phones() const {
     return phones;
 }
 
-// сеттеры с валидацией
+// сеттеры с двумя режимами работы
 
 bool Contact::set_firstName(const string& newFirstName) {
     string input = trim(newFirstName);
     
-    while (!validate_name(input)) {
-        cerr << "[Contact] Invalid name: " << input << endl;
-        cout << "Please enter a valid name: ";
-        getline(cin, input);
-        input = trim(input);
+    if (workMode == ContactMode::CONSOLE) {
+        // консольный режим - интерактивный ввод при ошибке
+        while (!validate_name(input)) {
+            cerr << "[Contact] Invalid name: " << input << endl;
+            cout << "Please enter a valid name: ";
+            getline(cin, input);
+            input = trim(input);
+        }
+        firstName = input;
+        return true;
+    } else {
+        // GUI режим - просто проверяем и возвращаем результат
+        if (!validate_name(input)) {
+            return false;
+        }
+        firstName = input;
+        return true;
     }
-    
-    firstName = input;
-    return true;
 }
 
 bool Contact::set_lastName(const string& newLastName) {
     string input = trim(newLastName);
     
-    while (!validate_name(input)) {
-        cerr << "[Contact] Invalid last name: " << input << endl;
-        cout << "Please enter a valid last name: ";
-        getline(cin, input);
-        input = trim(input);
+    if (workMode == ContactMode::CONSOLE) {
+        while (!validate_name(input)) {
+            cerr << "[Contact] Invalid last name: " << input << endl;
+            cout << "Please enter a valid last name: ";
+            getline(cin, input);
+            input = trim(input);
+        }
+        lastName = input;
+        return true;
+    } else {
+        if (!validate_name(input)) {
+            return false;
+        }
+        lastName = input;
+        return true;
     }
-    
-    lastName = input;
-    return true;
 }
 
 bool Contact::set_patronymic(const string& newPatronymic) {
     string input = trim(newPatronymic);
     
-    // Отчество может быть пустым
-    while (!input.empty() && !validate_name(input)) {
-        cerr << "[Contact] Invalid patronymic: " << input << endl;
-        cout << "Please enter a valid patronymic (or leave empty): ";
-        getline(cin, input);
-        input = trim(input);
+    if (workMode == ContactMode::CONSOLE) {
+        // отчество может быть пустым
+        while (!input.empty() && !validate_name(input)) {
+            cerr << "[Contact] Invalid patronymic: " << input << endl;
+            cout << "Please enter a valid patronymic (or leave empty): ";
+            getline(cin, input);
+            input = trim(input);
+        }
+        patronymic = input;
+        return true;
+    } else {
+        // отчество может быть пустым
+        if (!input.empty() && !validate_name(input)) {
+            return false;
+        }
+        patronymic = input;
+        return true;
     }
-    
-    patronymic = input;
-    return true;
 }
 
 void Contact::set_address(const string& newAddress) {
@@ -135,21 +194,28 @@ void Contact::set_address(const string& newAddress) {
 bool Contact::set_birthDate(const string& newBirthDate) {
     string input = trim(newBirthDate);
     
-    while (!validate_birthDate(input)) {
-        cerr << "[Contact] Invalid date of birth: " << input << endl;
-        cout << "Please enter a valid date of birth: ";
-        getline(cin, input);
-        input = trim(input);
+    if (workMode == ContactMode::CONSOLE) {
+        while (!validate_birthDate(input)) {
+            cerr << "[Contact] Invalid date of birth: " << input << endl;
+            cout << "Please enter a valid date of birth: ";
+            getline(cin, input);
+            input = trim(input);
+        }
+        birthDate = input;
+        return true;
+    } else {
+        if (!validate_birthDate(input)) {
+            return false;
+        }
+        birthDate = input;
+        return true;
     }
-    
-    birthDate = input;
-    return true;
 }
 
 bool Contact::set_email(const string& newEmail) {
     string input = trim(newEmail);
     
-    // Удалить ВСЕ пробелы
+    // удалить все пробелы
     string result;
     for (char c : input) {
         if (c != ' ') {
@@ -158,54 +224,77 @@ bool Contact::set_email(const string& newEmail) {
     }
     input = result;
 
-    while (!Validators::validate_email(input)) {
-        cerr << "[Contact] Invalid email address: " << input << endl;
-        cout << "Please enter a valid email address: ";
-        getline(cin, input);
-        
-        // Повторно обрабатываем ввод
-        input = trim(input);
-        result.clear();
-        for (char c : input) {
-            if (c != ' ') {
-                result += c;
+    if (workMode == ContactMode::CONSOLE) {
+        while (!Validators::validate_email(input)) {
+            cerr << "[Contact] Invalid email address: " << input << endl;
+            cout << "Please enter a valid email address: ";
+            getline(cin, input);
+            
+            // повторно обрабатываем ввод
+            input = trim(input);
+            result.clear();
+            for (char c : input) {
+                if (c != ' ') {
+                    result += c;
+                }
             }
+            input = result;
         }
-        input = result;
+        email = input;
+        return true;
+    } else {
+        if (!Validators::validate_email(input)) {
+            return false;
+        }
+        email = input;
+        return true;
     }
-    
-    email = input;
-    return true;
 }
 
 bool Contact::set_phones(const list<PhoneNumber>& newPhones) {
-    list<PhoneNumber> input = newPhones;
-    
-    while (true) {
-        // Контакт должен иметь хотя бы один номер телефона
-        if (input.empty()) {
-            cerr << "[Contact] Phone list cannot be empty\n";
+    if (workMode == ContactMode::CONSOLE) {
+        list<PhoneNumber> input = newPhones;
+        
+        while (true) {
+            // контакт должен иметь хотя бы один номер телефона
+            if (input.empty()) {
+                cerr << "[Contact] Phone list cannot be empty\n";
+                input = prompt_for_phones();
+                continue;
+            }
+
+            // проверяем, что все номера в списке валидны
+            bool allValid = true;
+            for (const auto& phone : input) {
+                if (!phone.is_valid()) {
+                    cerr << "[Contact] Invalid phone number in list: " << phone.get_number() << "\n";
+                    allValid = false;
+                    break;
+                }
+            }
+
+            if (allValid) {
+                phones = input;
+                return true;
+            }
+            
+            cout << "Please enter valid phone numbers:\n";
             input = prompt_for_phones();
-            continue;
+        }
+    } else {
+        // GUI режим - просто проверяем
+        if (newPhones.empty()) {
+            return false;
         }
 
-        // Проверяем, что все номера в списке валидны
-        bool allValid = true;
-        for (const auto& phone : input) {
+        for (const auto& phone : newPhones) {
             if (!phone.is_valid()) {
-                cerr << "[Contact] Invalid phone number in list: " << phone.get_number() << "\n";
-                allValid = false;
-                break;
+                return false;
             }
         }
 
-        if (allValid) {
-            phones = input;
-            return true;
-        }
-        
-        cout << "Please enter valid phone numbers:\n";
-        input = prompt_for_phones();
+        phones = newPhones;
+        return true;
     }
 }
 
@@ -244,7 +333,7 @@ list<PhoneNumber> Contact::prompt_for_phones() {
 void Contact::addPhone(const PhoneNumber& phone) {
     if (phone.is_valid()) {
         phones.push_back(phone);
-    } else {
+    } else if (workMode == ContactMode::CONSOLE) {
         cerr << "[Contact] An attempt to add an invalid phone number" << endl;
     }
 }
@@ -256,8 +345,10 @@ void Contact::removePhone(int index) {
             ++it;
         }
         phones.erase(it);
-        cout << "[Contact] Phone number at index " << index << " removed successfully\n";
-    } else {
+        if (workMode == ContactMode::CONSOLE) {
+            cout << "[Contact] Phone number at index " << index << " removed successfully\n";
+        }
+    } else if (workMode == ContactMode::CONSOLE) {
         cerr << "[Contact] Incorrect phone number index: " << index 
              << ". Total phones: " << phones.size() << "\n";
     }
@@ -274,47 +365,61 @@ int Contact::phoneCount() const {
 // валидация
 
 bool Contact::is_valid() const {
-    // Проверка обязательных полей
+    // проверка обязательных полей
     if (firstName.empty() || lastName.empty() || email.empty()) {
-        cerr << "[Contact] Required fields (First name, Last name or Email) are missing\n";
+        if (workMode == ContactMode::CONSOLE) {
+            cerr << "[Contact] Required fields (First name, Last name or Email) are missing\n";
+        }
         return false;
     }
 
-    // Проверка валидации имени и фамилии
+    // проверка валидации имени и фамилии
     if (!validate_name(firstName) || !validate_name(lastName)) {
-        cerr << "[Contact] Invalid first or last name\n";
+        if (workMode == ContactMode::CONSOLE) {
+            cerr << "[Contact] Invalid first or last name\n";
+        }
         return false;
     }
 
-    // Проверка отчества (может быть пустым, но если не пустое — должно быть валидным)
+    // проверка отчества (может быть пустым, но если не пустое — должно быть валидным)
     if (!patronymic.empty() && !validate_name(patronymic)) {
-        cerr << "[Contact] Invalid patronymic\n";
+        if (workMode == ContactMode::CONSOLE) {
+            cerr << "[Contact] Invalid patronymic\n";
+        }
         return false;
     }
 
-    // Email обязателен и должен быть валидным
+    // email обязателен и должен быть валидным
     if (!validate_email(email)) {
-        cerr << "[Contact] Invalid email address\n";
+        if (workMode == ContactMode::CONSOLE) {
+            cerr << "[Contact] Invalid email address\n";
+        }
         return false;
     }
 
-    // Должен быть хотя бы один телефон
+    // должен быть хотя бы один телефон
     if (phones.empty()) {
-        cerr << "[Contact] There is not a single phone number\n";
+        if (workMode == ContactMode::CONSOLE) {
+            cerr << "[Contact] There is not a single phone number\n";
+        }
         return false;
     }
 
-    // Проверка корректности всех телефонов
+    // проверка корректности всех телефонов
     for (const auto& phone : phones) {
         if (!phone.is_valid()) {
-            cerr << "[Contact] One of the phones is invalid\n";
+            if (workMode == ContactMode::CONSOLE) {
+                cerr << "[Contact] One of the phones is invalid\n";
+            }
             return false;
         }
     }
 
-    // Проверка даты рождения (необязательная, но если задана — валидируем)
+    // проверка даты рождения (необязательна, но если задана — валидируем)
     if (!validate_birthDate(birthDate)) {
-        cerr << "[Contact] One of the phones is invalid\n";
+        if (workMode == ContactMode::CONSOLE) {
+            cerr << "[Contact] Invalid birth date\n";
+        }
         return false;
     }
 
@@ -367,7 +472,7 @@ Contact Contact::fromJson(const string& jsonStr) {
     try {
         json data = nlohmann::json::parse(jsonStr);
 
-        // Если это массив — достаём первый элемент
+        // если это массив — достаём первый элемент
         if (data.is_array() && !data.empty()) {
             if (data[0].is_string()) {
                 data = nlohmann::json::parse(data[0].get<string>()); // строка внутри массива
@@ -376,7 +481,7 @@ Contact Contact::fromJson(const string& jsonStr) {
             }
         }
 
-        // Простые поля
+        // простые поля
         contact.firstName  = data.value("firstName", "");
         contact.lastName   = data.value("lastName", "");
         contact.patronymic = data.value("patronymic", "");
@@ -394,7 +499,9 @@ Contact Contact::fromJson(const string& jsonStr) {
         }
     }
     catch (const std::exception& e) {
-        cerr << "[Contact::fromJson] JSON parse error: " << e.what() << endl;
+        if (workMode == ContactMode::CONSOLE) {
+            cerr << "[Contact::fromJson] JSON parse error: " << e.what() << endl;
+        }
     }
 
     return contact;
@@ -417,7 +524,7 @@ string Contact::toString() const {
     
     return result;
 }
-// возващает что-то типа "Иванов Иван Иванович, birthDate: 15.03.1990, email: ivan@example.com, phones: 89887448548, ..."
+// возвращает что-то типа "Иванов Иван Иванович, birthDate: 15.03.1990, email: ivan@example.com, phones: 89887448548, ..."
 
 
 bool Contact::operator==(const Contact& other) const {
